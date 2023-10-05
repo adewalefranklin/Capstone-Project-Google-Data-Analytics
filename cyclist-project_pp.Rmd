@@ -7,10 +7,6 @@ output:
   beamer_presentation: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-```{r , echo = TRUE}
 #STEP 1 - LOAD ALL THE REQUIRED LIBRARIE
 
 library(readr)#data importation
@@ -228,18 +224,9 @@ head(cyclistic_df_2)
 cyclistic_df_2 <- cyclistic_df_2 %>%
   select(-c(ride_id, start_station_id, end_station_id,start_lat,start_lng,end_lat,end_lng)) #this minus these specified columns from the dataframe
 ```
+
 ```{r}
-#STEP 13 - Final cleaning (DROP COLUMNS NOT REQUIRED FOR VISUALISATION)
-
-# STEP 14 - RENAME DATAFRAME
-
-cyclistic_cleaned_data <- cyclistic_df_2
-
-view(cyclistic_cleaned_data) # to view the entire df after cleaning
-
-```
-```{r}
-#STEP 13 - Final cleaning (DROP COLUMNS NOT REQUIRED FOR VISUALISATION)
+#STEP 13 - Final Preparation
 
 # 1. - RENAME DATAFRAME
 
