@@ -1,0 +1,346 @@
+---
+title: "Cyclistic_BIke_Project"
+author: "Adewale Franklin Hassan"
+date: "`r Sys.Date()`"
+output:
+  powerpoint_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+```{r , echo = TRUE}
+#STEP 1 - LOAD ALL THE REQUIRED LIBRARIE
+
+library(readr)#data importation
+library(tidyverse)  #helps wrangle data
+library(lubridate)#date-times and time-spans
+library(dplyr) # data wrangling and manipulation (mutate, arrange etc)
+library(plyr) # for data manipulation e.g merging
+library(hms) #for time formatting
+library(tibble) #manipulation and printing of df
+library(tidyr) #wrangling 
+library(ggplot2)  #helps visualize data
+```
+```{r}
+#STEP 2 - Data Importation
+
+X202007_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202007-divvy-tripdata.csv")
+View(X202007_divvy_tripdata)
+
+X202008_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202008-divvy-tripdata.csv")
+View(X202008_divvy_tripdata)
+
+X202009_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202009-divvy-tripdata.csv")
+View(X202009_divvy_tripdata)
+
+X202010_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202010-divvy-tripdata.csv")
+View(X202010_divvy_tripdata)
+
+X202011_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202011-divvy-tripdata.csv")
+View(X202011_divvy_tripdata)
+
+X202012_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202012-divvy-tripdata.csv")
+View(X202012_divvy_tripdata)
+
+X202101_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202101-divvy-tripdata.csv")
+View(X202101_divvy_tripdata)
+
+X202102_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202102-divvy-tripdata.csv")
+View(X202102_divvy_tripdata)
+
+X202103_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202103-divvy-tripdata.csv")
+View(X202103_divvy_tripdata)
+
+X202104_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202104-divvy-tripdata.csv")
+View(X202104_divvy_tripdata)
+
+X202105_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202105-divvy-tripdata.csv")
+View(X202105_divvy_tripdata)
+
+X202106_divvy_tripdata <- read_csv("C:/Program Files/Microsoft SQL Server/MSSQL15.SQLEXPRESS/MSSQL/Backup/Capstone req. data/202106-divvy-tripdata.csv")
+View(X202106_divvy_tripdata)
+```
+```{r}
+#STEP 3 - Getting to know the data: head() for viewing the first 6 rows of the table, Colnames() to check column names, glimpse() to check the characteristics of the dataframe
+ 
+# STEP 4- RENAMING THE COLUMNS CONSISTENCY
+
+jul20<-X202007_divvy_tripdata
+aug20<-X202008_divvy_tripdata
+sep20<-X202009_divvy_tripdata
+oct20<-X202010_divvy_tripdata
+nov20<-X202011_divvy_tripdata
+dec20<-X202012_divvy_tripdata
+jan21<-X202101_divvy_tripdata
+feb21<-X202102_divvy_tripdata
+mar21<- X202103_divvy_tripdata
+apr21<- X202104_divvy_tripdata
+may21<-X202105_divvy_tripdata
+jun21<-X202106_divvy_tripdata
+
+```
+```{r}
+# STEP 4 - MERGE THE DATAFRAMES
+
+cyclistic_bike <- rbind(jul20,aug20,sep20,oct20,nov20,dec20,jan21,feb21,mar21,apr21,may21,jun21)
+head(cyclistic_bike)  # to view the first 6 rows of the merged df
+
+```
+```{r}
+#STEP 5 - View the columns to see the results of the merging
+
+colnames(cyclistic_bike) # To view the columns to compare if the number of columns are the same before merging
+```
+```{r}
+# STEP 6 - REMOVING INDIVIDUAL MONTH DATAFRAME (THIS PRACTICE FREES UP SPACE IN THE ENVIRONMENT) 
+
+remove(jul20, aug20,sep20, nov20, dec20, jan21, feb21, mar21, apr21, may21, jun21)
+
+```
+```{r}
+#STEP 7 - FIND LENGTH OF RIDE IN MINUTES (ended_at time from started_at time in mins.)
+
+cyclistic_df_2 <- cyclistic_bike
+
+cyclistic_df_2$ride_length <- difftime(cyclistic_bike$ended_at, cyclistic_bike$started_at, units = "mins")
+cyclistic_df_2$ride_length <- round(cyclistic_df_2$ride_length, digits = 1)
+
+```
+```{r}
+#STEP 8 - ADDING NEW COLUMNS (DAY,DAY OF THE WEEK,TIME,HOUR,MONTH AND YEAR)
+
+cyclistic_df_2$date <- as.Date(cyclistic_df_2$started_at) # yyyy-mm-dd format
+cyclistic_df_2$day_of_week <- wday(cyclistic_df_2$started_at)
+cyclistic_df_2$day_of_week <- format(as.Date(cyclistic_df_2$date), "%A") #new column - day of week
+cyclistic_df_2$month <- format(as.Date(cyclistic_df_2$date), "%m")#new column - month
+cyclistic_df_2$day <- format(as.Date(cyclistic_df_2$date), "%d") #new column - day
+cyclistic_df_2$year <- format(as.Date(cyclistic_df_2$date), "%Y") #new column - year
+cyclistic_df_2$time <- format(as.Date(cyclistic_df_2$date), "%H:%M:%S") #time format in HH:MM:SS(Hour, Mins, Secs)
+cyclistic_df_2$time <- as_hms((cyclistic_bike$started_at)) # new column - time
+cyclistic_df_2$hour <- hour(cyclistic_df_2$time) #new column - hour
+
+colnames(cyclistic_df_2)   # to check the new column
+```
+```{r}
+#STEP 9 - ADDITIONAL COLUMNS - YEAR SEASONS (FALL, SPRING, SUMMER, WINTER)
+
+cyclistic_df_2 <-cyclistic_df_2 %>% mutate(season = 
+                                                   case_when(month == "03" ~ "Spring",
+                                                             month == "04" ~ "Spring",
+                                                             month == "05" ~ "Spring",
+                                                             month == "06"  ~ "Summer",
+                                                             month == "07"  ~ "Summer",
+                                                             month == "08"  ~ "Summer",
+                                                             month == "09" ~ "Fall",
+                                                             month == "10" ~ "Fall",
+                                                             month == "11" ~ "Fall",
+                                                             month == "12" ~ "Winter",
+                                                             month == "01" ~ "Winter",
+                                                             month == "02" ~ "Winter")
+)
+
+colnames(cyclistic_df_2)   # to check the new column
+
+```
+```{r}
+#STEP 10 - ADDITIONAL COLUMNS - DIFFERENT TIME OF THE DAY (MORNING, AFTERNOON, EVENING,NIGHT)
+
+cyclistic_df_2 <- cyclistic_df_2 %>% mutate(time_of_day = 
+                                                    case_when(hour == "0" ~ "Night",
+                                                              hour == "1" ~ "Night",
+                                                              hour == "2" ~ "Night",
+                                                              hour == "3" ~ "Night",
+                                                              hour == "4" ~ "Night",
+                                                              hour == "5" ~ "Night",
+                                                              hour == "6" ~ "Morning",
+                                                              hour == "7" ~ "Morning",
+                                                              hour == "8" ~ "Morning",
+                                                              hour == "9" ~ "Morning",
+                                                              hour == "10" ~ "Morning",
+                                                              hour == "11" ~ "Morning",
+                                                              hour == "12" ~ "Afternoon",
+                                                              hour == "13" ~ "Afternoon",
+                                                              hour == "14" ~ "Afternoon",
+                                                              hour == "15" ~ "Afternoon",
+                                                              hour == "16" ~ "Afternoon",
+                                                              hour == "17" ~ "Afternoon",
+                                                              hour == "18" ~ "Evening",
+                                                              hour == "19" ~ "Evening",
+                                                              hour == "20" ~ "Evening",
+                                                              hour == "21" ~ "Evening",
+                                                              hour == "22" ~ "Evening",
+                                                              hour == "23" ~ "Evening")
+)
+
+colnames(cyclistic_df_2) # to view the result of the above code
+
+```
+```{r}
+#STEP 11 - ADDITIONAL COLUMNS - MONTH(FULL MONTHS NAMES)
+
+cyclistic_df_2 <-cyclistic_df_2 %>% mutate(month = 
+                                                   case_when(month == "01" ~ "January",
+                                                             month == "02" ~ "February",
+                                                             month == "03" ~ "March",
+                                                             month == "04" ~ "April",
+                                                             month == "05" ~ "May",
+                                                             month == "06" ~ "June",
+                                                             month == "07" ~ "July",
+                                                             month == "08" ~ "August",
+                                                             month == "09" ~ "September",
+                                                             month == "10" ~ "October",
+                                                             month == "11" ~ "November",
+                                                             month == "12" ~ "December")
+)
+  
+colnames(cyclistic_df_2) # to check the added column
+
+```
+```{r}
+#STEP 12 - CLEANING TO ENSURE CONSISTENCY AND FINAL PREPARATION FOR FURTHER ANALYSIS AND VISUALISATION
+
+# 1. - REMOVING -VE VALUES AND 0 VALUES OF RIDES
+
+cyclistic_df_2 <- cyclistic_df_2[!(cyclistic_df_2$ride_length <= 0),] #remove where ride_length is 0 or negative
+
+head(cyclistic_df_2)
+```
+```{r}
+# 2. DROP ROWS WITH NA VALUES
+
+cyclistic_df_2 <- na.omit(cyclistic_df_2) 
+
+head(cyclistic_df_2)
+
+```
+```{r}
+# 3. DROP DUPLICATE ROWS
+
+cyclistic_df_2 <- distinct(cyclistic_df_2)
+
+head(cyclistic_df_2)
+```
+```{r}
+# 4. DROP COLUMNS NOT REQUIRED FOR FURTHER ANALYSIS AND VISUALISATION(ride_id, start_station_id, end_station_id, start_lat, start_long, end_lat, end_lng)
+
+cyclistic_df_2 <- cyclistic_df_2 %>%
+  select(-c(ride_id, start_station_id, end_station_id,start_lat,start_lng,end_lat,end_lng)) #this minus these specified columns from the dataframe
+```
+```{r}
+#STEP 13 - Final cleaning (DROP COLUMNS NOT REQUIRED FOR VISUALISATION)
+
+# STEP 14 - RENAME DATAFRAME
+
+cyclistic_cleaned_data <- cyclistic_df_2
+
+view(cyclistic_cleaned_data) # to view the entire df after cleaning
+
+```
+```{r}
+#STEP 13 - Final cleaning (DROP COLUMNS NOT REQUIRED FOR VISUALISATION)
+
+# 1. - RENAME DATAFRAME
+
+cyclistic_cleaned_data <- cyclistic_df_2
+
+#view(cyclistic_cleaned_data) # to view the entire df after cleaning
+
+```
+```{r}
+# 2. - AVERAGE DAILY RIDE LENGTH BETWEEN CASUAL RIDERS AND MEMBERSHIP RIDERS
+
+aggregate(cyclistic_cleaned_data$ride_length ~ cyclistic_cleaned_data$member_casual + cyclistic_cleaned_data$day_of_week,FUN = mean) # in no particular order
+
+```
+```{r}
+# 3. AVERAGE DAILY RIDE LENGTH BASED ON BIKE TYPE AND MEMBERSHIP TYPE
+
+aggregate(cyclistic_cleaned_data$ride_length ~ cyclistic_cleaned_data$member_casual + cyclistic_cleaned_data$rideable_type, FUN = mean) # in no particular order
+
+```
+```{r}
+# 4. AVERAGE DAILY RIDE LENGTH BASED ONLY MEMBERSHIP TYPE
+
+aggregate(cyclistic_cleaned_data$ride_length ~ cyclistic_cleaned_data$member_casual,FUN = mean)
+
+```
+```{r}
+# 5. AVERAGE DAILY RIDE LENGTH YEAR/MEMBERSHIP TYPE
+
+aggregate(cyclistic_cleaned_data$ride_length ~ cyclistic_cleaned_data$member_casual + cyclistic_cleaned_data$year,FUN = mean)
+
+```
+```{r}
+# 6. AVERAGE DAILY RIDE LENGTH DAY OF THE WEEK/BIKE-TYPE
+
+aggregate(cyclistic_cleaned_data$ride_length ~ cyclistic_cleaned_data$day_of_week + cyclistic_cleaned_data$rideable_type,FUN = mean)
+
+```
+```{r}
+#STEP 16 - VIS.
+
+options(scipen=999) #to prevent scientific notation
+
+distr_membership_type <- cyclistic_cleaned_data %>%
+  group_by(member_casual) %>%
+ dplyr::summarise(count = n()) %>%
+  mutate(perc=count/sum(count)) %>% 
+  ungroup() 
+```
+```{r}
+# 2. AVERAGE RIDE DURATION ACCORDING TO MEMBERSHIP TYPES 
+
+cyclistic_cleaned_data %>% 
+  group_by(member_casual) %>% 
+  dplyr::summarise(avg_ride_length = mean(ride_length)) %>% 
+  ggplot(aes(x=member_casual, y=avg_ride_length, fill=member_casual)) +
+  geom_bar(position="dodge", stat="identity",color="brown",width=0.5) +
+  labs(title = 'Average Ride Duration VS Membership Types',x='Membership Types',y='Average Ride Duration (mins)')+
+  theme_classic()
+```
+```{r}
+# 3. SUM OF RIDES MEMBERSHIP TYPE/ BIKE TYPE
+
+cyclistic_cleaned_data %>%
+  group_by(member_casual, rideable_type) %>% 
+  dplyr::summarise(total_count = n()) %>% 
+  ggplot(aes(x=rideable_type, y = total_count, fill=member_casual)) +
+  geom_bar(position="dodge", stat="identity",color="brown",width=0.7) +
+  labs(title = "Sum of Rides by Bike Types and Membership Types", x='Type of Bikes', y='Sum of Rides')+
+  theme_classic()
+
+```
+```{r}
+# 4. SUM OF RIDES DAYS OF THE WEEK/MEMBERSHIP TYPES
+
+cyclistic_cleaned_data %>% 
+  group_by(member_casual, day_of_week) %>% 
+  dplyr::summarise(total_count = n()) %>% 
+  ggplot(aes(x=day_of_week, y=total_count, fill=member_casual)) +
+  geom_bar(position="dodge", stat='identity',color="grey",width=0.7) +
+  labs(title = "Sum of Rides by Days of The week & Membership Types",x='Days of the Week',y='Sum of Rides')+
+  theme_classic()
+```
+```{r}
+# 5. SUM OF RIDES - MONTHS/MEMBERSHIP TYPES
+
+cyclistic_cleaned_data %>%
+  group_by(member_casual, month) %>%
+  dplyr::summarise(total_count = n()) %>% 
+  ggplot(aes(x=month, y = total_count, fill=member_casual)) +
+  geom_bar(position="dodge", stat="identity",color="black",width=0.7)+
+  labs(title = 'Sum of Rides by Months & Membership Types',x='Month',y='Sum of Rides')+
+  theme_classic()
+```
+```{r}
+# 6. Average ride length by member and ride types
+cyclistic_cleaned_data %>% 
+  group_by(member_casual,rideable_type) %>% 
+  dplyr::summarise(avg_ride_length = mean(ride_length)) %>% 
+  ggplot(aes(x=rideable_type, y=avg_ride_length, fill=rideable_type))+
+  geom_bar(position="dodge", stat="identity",color="brown",width=0.5)+
+  facet_wrap(~member_casual)+
+  labs(title = 'Average Duration of Ride by Membership Type and Bike Types', x='Bike Types', y='Average Duration of Ride (mins)')+
+  theme_grey()
