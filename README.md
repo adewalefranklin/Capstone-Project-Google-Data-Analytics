@@ -23,6 +23,7 @@ Recommendations
 Other:
 
 Data source - https://divvy-tripdata.s3.amazonaws.com/index.html
+
 Detailed Analysis - 
 
 Tableau Vis
