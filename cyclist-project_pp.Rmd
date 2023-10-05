@@ -7,7 +7,7 @@ output:
   beamer_presentation: default
 ---
 
-#STEP 1 - LOAD ALL THE REQUIRED LIBRARIE
+#STEP 1 - LOAD ALL THE REQUIRED LIBRARIES
 
 library(readr)#data importation
 library(tidyverse)  #helps wrangle data
